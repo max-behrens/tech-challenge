@@ -1,5 +1,8 @@
 # TODO (If more time)
 
+## Add relevant content from joined tables to Dashboard.vue, as well as when searching in items/Index.vue.
+
+Refactor the filtering functionality in items/Index.vue, into Dashboard.vue.
 
 ## Add option for permenant deletion as well as soft delete.
 

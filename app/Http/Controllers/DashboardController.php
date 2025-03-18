@@ -11,8 +11,20 @@ class DashboardController extends Controller
 {
     public function __invoke(Request $request): Response
     {
+        // Get the search query, default to empty if not set.
+        $search = $request->get('search', '');
+
+        $items = Item::query()
+            ->when($search, function ($query, $search) {
+                return $query->where('name', 'LIKE', "%{$search}%")
+                             ->orWhere('description', 'LIKE', "%{$search}%");
+            })
+            ->oldest()
+            ->limit(10)
+            ->get();
+
         return Inertia::render('Dashboard', [
-            'items' => Item::oldest()->limit(10)->get(),
+            'items' => $items,
         ]);
     }
 }
