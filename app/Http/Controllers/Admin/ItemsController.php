@@ -15,8 +15,21 @@ class ItemsController extends Controller
 {
     public function index(): Response
     {
+        $search = request('search');
+
+        // Add search functionality to items/Index.vue.
+        $items = Item::query()
+            ->when($search, function ($query, $search) {
+                return $query->where('name', 'LIKE', "%{$search}%");
+            })
+            ->oldest()
+            ->limit(10)
+            ->get();
+
+        // Pass the items and search variables to the vue file.
         return Inertia::render('items/Index', [
-            'items' => Item::query()->oldest()->limit(10)->get(),
+            'items' => $items,
+            'search' => $search,
         ]);
     }
 

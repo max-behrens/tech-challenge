@@ -3,8 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem } from '@/types';
-import { Head, Link } from '@inertiajs/vue3';
-import { defineProps } from 'vue';
+import { Head, Link, router } from '@inertiajs/vue3';
+import { defineProps, ref, watch } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -16,10 +16,25 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/admin/items',
     },
 ];
-
-defineProps<{
-    items: Array;
+// Array type requires a generic type argument.
+const props = defineProps<{
+    items: Array<any>;    
+    search?: string;
 }>();
+
+// Define the item search box.
+const search = ref(props.search || '');
+
+watch(search, (value) => {
+    router.get(route('admin.items.index'),
+     { search: value }, 
+     { 
+        preserveState: true, 
+        preserveScroll: true,
+        replace: true
+    });
+});
+
 </script>
 
 <template>
@@ -33,6 +48,17 @@ defineProps<{
                     <Button :as="Link" :href="route('admin.items.create')">Create Item</Button>
                 </div>
 
+                <!-- Item Search Box -->
+                <div class="mt-4">
+                    <input
+                        v-model="search"
+                        type="text"
+                        placeholder="Search items..."
+                        class="w-full px-4 py-2 border rounded-lg text-black"
+                    />
+                </div>
+
+                <!-- Items Table -->
                 <div class="mt-8 flex flex-col">
                     <Table>
                         <TableHeader>
