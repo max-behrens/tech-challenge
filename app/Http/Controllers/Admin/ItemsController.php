@@ -25,9 +25,33 @@ class ItemsController extends Controller
             ->when($search, function ($query, $search) {
                 return $query->where('name', 'LIKE', "%{$search}%");
             })
+            // Join with the downloads table for items with content_type 'download'
+            ->leftJoin('downloads', function ($join) {
+                $join->on('items.content_id', '=', 'downloads.id')
+                    ->where('items.content_type', '=', 'download');
+            })
+            // Join with the weblinks table for items with content_type 'weblink'
+            ->leftJoin('weblinks', function ($join) {
+                $join->on('items.content_id', '=', 'weblinks.id')
+                    ->where('items.content_type', '=', 'WEBLINK');
+            })
+            // Join with the infos table for items with content_type 'info'
+            ->leftJoin('infos', function ($join) {
+                $join->on('items.content_id', '=', 'infos.id')
+                    ->where('items.content_type', '=', 'info');
+            })
+            ->select(
+                'items.*',
+                'downloads.url as download_url',
+                'weblinks.url as weblink_url',
+                \DB::raw("CONCAT(infos.header, '<br><br>', infos.content) as info_content") // Concatenate header and content from infos table.
+            )
             ->oldest()
             ->limit(10)
             ->get();
+
+
+        
 
         // Pass the items and search variables to the vue file.
         return Inertia::render('items/Index', [
@@ -106,7 +130,9 @@ class ItemsController extends Controller
     */
     public function delete(Item $item): RedirectResponse
     {
-        $item->delete();
+        // Soft delete by setting active to 0.
+        $item->active = 0;
+        $item->save();
 
         return redirect()->route('admin.items.index')->with('message', 'Item deleted successfully.');
     }

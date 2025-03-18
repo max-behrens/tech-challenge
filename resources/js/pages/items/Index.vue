@@ -72,7 +72,10 @@ const deleteItem = (id: number) => {
                             <TableRow>
                                 <TableHead>Name</TableHead>
                                 <TableHead>Type</TableHead>
-                                <TableHead>Active</TableHead>
+                                <!-- Show Description & Content instead of Active column, only when search has a term. -->
+                                <TableHead v-if="search">Description</TableHead>
+                                <TableHead v-if="search">Content</TableHead>
+                                <TableHead v-if="!search">Active</TableHead>
                                 <TableHead class="text-right"> Actions </TableHead>
                             </TableRow>
                         </TableHeader>
@@ -82,7 +85,21 @@ const deleteItem = (id: number) => {
                                     {{ item.name }}
                                 </TableCell>
                                 <TableCell>{{ item.content_type }}</TableCell>
-                                <TableCell>{{ item.active ? 'Active' : 'Inactive' }}</TableCell>
+                                <!-- Show Content & Description columns only when search has a term. -->
+                                <TableCell v-if="search">{{ item.description }}</TableCell>
+                                <TableCell v-if="search">
+                                    <span v-if="item.content_type === 'WEBLINK'">
+                                        <a :href="item.weblink_url" target="_blank" class="text-blue-500">{{ item.weblink_url }}</a>
+                                    </span>
+                                    <span v-if="item.content_type === 'download'">
+                                        <a :href="item.download_url" target="_blank" class="text-blue-500">{{ item.download_url }}</a>
+                                    </span>
+                                    <span v-if="item.content_type === 'info'" v-html="item.info_content"></span>
+                                </TableCell>
+                                <!-- Show Active column only when search is empty. -->
+                                <TableCell v-if="!search">
+                                    {{ item.active ? 'Active' : 'Inactive' }}
+                                </TableCell>
                                 <TableCell class="text-right">
                                     <Button :as="Link" variant="link" :href="route('admin.items.edit', item.id)"> Edit </Button>
                                     <Button type="button" variant="link" @click="deleteItem(item.id)">Delete</Button>
