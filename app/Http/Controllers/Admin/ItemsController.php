@@ -134,6 +134,9 @@ class ItemsController extends Controller
         $item->active = 0;
         $item->save();
 
+        // To delete item permenantly, use:
+        // $item->delete();
+
         return redirect()->route('admin.items.index')->with('message', 'Item deleted successfully.');
     }
 
