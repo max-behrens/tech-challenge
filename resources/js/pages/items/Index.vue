@@ -16,9 +16,22 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: '/admin/items',
     },
 ];
+
+interface Item {
+  id: number;
+  name: string;
+  description: string;
+  content_type: string;
+  active: boolean;
+  content_id: number;
+  weblink_url?: string;
+  download_url?: string;
+  info_content?: string;
+}
+
 // Array type requires a generic type argument.
 const props = defineProps<{
-    items: Array<any>;    
+    items: Item[];    
     search?: string;
 }>();
 
@@ -127,7 +140,7 @@ const filteredItems = computed(() => {
                                     {{ item.active ? 'Active' : 'Inactive' }}
                                 </TableCell>
                                 <TableCell class="text-right">
-                                    <Button :as="Link" variant="link" :href="route('admin.items.edit', item.id)"> Edit </Button>
+                                    <Button :as="Link" variant="link" :href="route('admin.items.edit', { id: item.id })"> Edit </Button>
                                     <Button type="button" variant="link" @click="deleteItem(item.id)">Delete</Button>
                                 </TableCell>
                             </TableRow>
