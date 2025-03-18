@@ -45,7 +45,7 @@ class ItemPolicy
      */
     public function delete(User $user, Item $item): bool
     {
-        //
+        return $user->admin;
     }
 
     /**

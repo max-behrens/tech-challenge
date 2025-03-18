@@ -13,6 +13,9 @@ use Inertia\Response;
 
 class ItemsController extends Controller
 {
+    /*
+    * Render the item vue with table and search functionality.
+    */
     public function index(): Response
     {
         $search = request('search');
@@ -33,11 +36,17 @@ class ItemsController extends Controller
         ]);
     }
 
+    /*
+    * Render the create item vue.
+    */
     public function create(): Response
     {
         return Inertia::render('items/Create', []);
     }
 
+    /*
+    * Create a new item.
+    */
     public function store()
     {
         $type = match(request()->input('content_type')) {
@@ -59,6 +68,9 @@ class ItemsController extends Controller
         return redirect()->route('admin.items.index')->with('message', 'Successfully Created Item');
     }
 
+    /*
+    * Render the edit item vue.
+    */
     public function edit(Item $item): Response
     {
         return Inertia::render('items/Edit', [
@@ -66,6 +78,9 @@ class ItemsController extends Controller
         ]);
     }
 
+    /*
+    * Edit an existing item.
+    */
     public function update(Item $item): RedirectResponse
     {
         $item->forceFill(request()->only(['name', 'description']));
@@ -85,4 +100,15 @@ class ItemsController extends Controller
 
         return redirect()->route('admin.items.index')->with('message', 'Successfully Updated Item');
     }
+
+    /*
+    * Delete an existing item.
+    */
+    public function delete(Item $item): RedirectResponse
+    {
+        $item->delete();
+
+        return redirect()->route('admin.items.index')->with('message', 'Item deleted successfully.');
+    }
+
 }

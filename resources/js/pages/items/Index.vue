@@ -35,6 +35,13 @@ watch(search, (value) => {
     });
 });
 
+// Define delete route as a POST request.
+const deleteItem = (id: number) => {
+  if (confirm('Are you sure you want to delete this item?')) {
+    router.delete(route('admin.items.delete', { id }));
+  }
+};
+
 </script>
 
 <template>
@@ -78,6 +85,7 @@ watch(search, (value) => {
                                 <TableCell>{{ item.active ? 'Active' : 'Inactive' }}</TableCell>
                                 <TableCell class="text-right">
                                     <Button :as="Link" variant="link" :href="route('admin.items.edit', item.id)"> Edit </Button>
+                                    <Button type="button" variant="link" @click="deleteItem(item.id)">Delete</Button>
                                 </TableCell>
                             </TableRow>
                         </TableBody>

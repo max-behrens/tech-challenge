@@ -36,5 +36,9 @@ Route::get('admin/items/{item}/edit', [ItemsController::class, 'edit'])
 Route::patch('admin/items/{item}', [ItemsController::class, 'update'])
     ->middleware(['auth', 'verified', 'can:update,item']);
 
+Route::delete('admin/items/{item}', [ItemsController::class, 'delete'])
+    ->name('admin.items.delete')
+    ->middleware(['auth', 'verified', 'can:delete,item']);
+
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
