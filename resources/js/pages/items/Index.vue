@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem } from '@/types';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { defineProps, ref, watch } from 'vue';
+import { defineProps, ref, watch, computed } from 'vue';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -22,12 +22,15 @@ const props = defineProps<{
     search?: string;
 }>();
 
-// Define the item search box.
 const search = ref(props.search || '');
 
-watch(search, (value) => {
+const filter = ref('All');
+
+// Watch the search and filter values,
+// and update the query string to maintain state when the user changes them.
+watch([search, filter], ([newSearch, newFilter]) => {
     router.get(route('admin.items.index'),
-     { search: value }, 
+     { search: newSearch, filter: newFilter }, 
      { 
         preserveState: true, 
         preserveScroll: true,
@@ -42,6 +45,14 @@ const deleteItem = (id: number) => {
   }
 };
 
+// Filter the items based on selected content_type.
+const filteredItems = computed(() => {
+  if (filter.value === 'All' || !filter.value) {
+    return props.items;
+  }
+  return props.items.filter(item => item.content_type === filter.value);
+});
+
 </script>
 
 <template>
@@ -52,6 +63,21 @@ const deleteItem = (id: number) => {
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="flex justify-between">
                     <h3 class="text-2xl">Items</h3>
+
+                    <!-- Type Filter Dropdown -->
+                    <div class="ml-4">
+                        <label for="content-type-filter" class="mr-2 text-lg">Filter by Type:</label>
+                        <select
+                            id="content-type-filter"
+                            v-model="filter"
+                            class="px-4 py-2 border rounded-lg text-black">
+                            <option value="All">All</option>
+                            <option value="info">Info</option>
+                            <option value="download">Download</option>
+                            <option value="WEBLINK">Weblink</option>
+                        </select>
+                    </div>
+
                     <Button :as="Link" :href="route('admin.items.create')">Create Item</Button>
                 </div>
 
@@ -80,7 +106,7 @@ const deleteItem = (id: number) => {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            <TableRow v-for="item in items" :key="item.id">
+                            <TableRow v-for="item in filteredItems" :key="item.id">
                                 <TableCell>
                                     {{ item.name }}
                                 </TableCell>
