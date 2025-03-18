@@ -9,6 +9,11 @@ Refactor the filtering functionality in items/Index.vue, into Dashboard.vue.
 Add modal that appears once Delete is clicked, asking user if they would like to delete permenantly, or just flag as inactive.
 This could be done by crating a separate route in web.php for deleting an item permenantly, which would then be handled differently in ItemController.
 
+## Change db locally from mysql to sqlite.
+
+When setting up my local environment, it was easier to handle the data in my existing mysql connection where I created a new db 'laravel' to hold the the tables.
+If I had more time, I would ensure the setup for sqlite was working locally so I could use this instead.
+
 
 ## Consider disabling Inertia progress bar in items/Index.vue
 
